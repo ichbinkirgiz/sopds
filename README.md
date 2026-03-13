@@ -70,8 +70,8 @@
 
 1.2 Зависимости.  
 - Требуется Python не ниже версии 3.4
-- Django 1.10
-- Pillow 2.9.0
+- Django 2.2
+- Pillow 10.0
 - apscheduler 3.3.0
 - django-picklefield
 - lxml
