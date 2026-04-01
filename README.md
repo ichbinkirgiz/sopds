@@ -75,7 +75,7 @@
 - apscheduler 3.3.0
 - django-picklefield
 - lxml
-- python-telegram-bot 10
+- python-telegram-bot 13.5
 
 Для работы проекта необходимо установить указанные  зависимости: 
 
