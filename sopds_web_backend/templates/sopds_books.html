@@ -3,12 +3,16 @@
 
 {% block body %}
 <script>
-       function del_bsbook(b_id, b_t) {
-           $('#DeleteBook_btnYes').attr("href","{% url "web:bsdel" %}?book="+b_id);
-           $('#DeleteBook_image').attr("src","{% url "opds:covertmpl" %}"+b_id+"/");
-           $('#DeleteBook_title').text(b_t);
-           $('#DeleteBookModal').foundation('open');
-       }
+    function openCoverModal(link) {
+       $('#CoverModalImage').attr('src', link.href);
+       $('#CoverModal').foundation('open');
+    }
+    function del_bsbook(b_id, b_t) {
+       $('#DeleteBook_btnYes').attr("href","{% url "web:bsdel" %}?book="+b_id);
+       $('#DeleteBook_image').attr("src","{% url "opds:covertmpl" %}"+b_id+"/");
+       $('#DeleteBook_title').text(b_t);
+       $('#DeleteBookModal').foundation('open');
+    }
 </script>
            
 <div id="DeleteBookModal" class="reveal tiny text-center" data-reveal>
@@ -43,6 +47,13 @@
  <a class="alert button small" data-open="ConfirmModal">{%  trans "Clear bookshelf" %}</a>
  {% endif %}
 
+ <div id="CoverModal" class="reveal text-center" data-reveal>
+    <img id="CoverModalImage" src="" alt="" style="max-width: 100%; max-height: 80vh;">
+    <button class="close-button" data-close aria-label="Close modal" type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
+</div>
+
 {%  for b in books %}
 		<div class="large-12 column">
 			<b>{{ b.title }}</b> &nbsp;&nbsp;&nbsp;&nbsp;
@@ -55,10 +66,10 @@
 		    <table>
 			  <tr>	
 		        <td rowspan="6" width="130px" style="padding:0rem 0rem;">
-				    <a href="{% url 'opds_catalog:cover' b.id %}" target="_blank">
-                       <img src="{% url 'opds_catalog:thumb' b.id %}" alt=""
-                            style="width: 37rem;max-width: 100%;height: auto;vertical-align: middle;border-style: none;">
-                    </a>
+				        <a href="{% url 'opds_catalog:cover' b.id %}" onclick="openCoverModal(this); return false;">
+                  <img src="{% url 'opds_catalog:thumb' b.id %}" alt=""
+                    style="width: 37rem;max-width: 100%;height: auto;vertical-align: middle;border-style: none;">
+                </a>
 			    </td>
 			    <td rowspan="6" style="font-size:100%; padding:1rem 1rem;">
 				  {% trans "Book title:" %} <b> {{ b.title }} </b> <br>
