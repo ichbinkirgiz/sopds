@@ -7,6 +7,10 @@
        $('#CoverModalImage').attr('src', link.href);
        $('#CoverModal').foundation('open');
     }
+	function openBookModal(url) {
+       $('#BookFrame').attr('src', url);
+       $('#BookModal').foundation('open');
+    }
     function del_bsbook(b_id, b_t) {
        $('#DeleteBook_btnYes').attr("href","{% url "web:bsdel" %}?book="+b_id);
        $('#DeleteBook_image').attr("src","{% url "opds:covertmpl" %}"+b_id+"/");
@@ -17,7 +21,7 @@
            
 <div id="DeleteBookModal" class="reveal tiny text-center" data-reveal>
   <h5 id="DeleteBookModalTitle">{% trans "Confirm the deletion of the book to your bookshelf." %}</h5>
-  <table><tr>	
+  <table><tr>
   <td width="100px" style="padding:0rem 0rem;">
       <img src="" id="DeleteBook_image" style="max-height: 100px; max-width: 100px">
   </td> 
@@ -42,7 +46,7 @@
   <button class="close-button" data-close aria-label="Close modal" type="button">
     <span aria-hidden="true">&times;</span>
   </button>
-</div>
+ </div>
 
  <a class="alert button small" data-open="ConfirmModal">{%  trans "Clear bookshelf" %}</a>
  {% endif %}
@@ -52,73 +56,107 @@
     <button class="close-button" data-close aria-label="Close modal" type="button">
         <span aria-hidden="true">&times;</span>
     </button>
+ </div>
+
+<div id="BookModal"
+     class="reveal"
+     data-reveal
+     style="width:98%;height:98%;">
+    <iframe id="BookFrame"
+            style="width:100%;height:85vh;border:none;">
+    </iframe>
+    <button class="close-button"
+            data-close
+            aria-label="Close modal"
+            type="button">
+        <span aria-hidden="true">&times;</span>
+    </button>
 </div>
 
 {%  for b in books %}
-		<div class="large-12 column">
-			<b>{{ b.title }}</b> &nbsp;&nbsp;&nbsp;&nbsp;
-			{% if isbookshelf %}
-			   <i><a href="#" onclick="del_bsbook({{ b.id }},'{{b.title}}');"><span class="secondary label small">&nbsp;{% trans "Delete from bookshelf" %}&nbsp;</span></a></i>
-		    {% endif %}
-		</div>
-		
-		<div class="large-12 column">
-		    <table>
-			  <tr>	
-		        <td rowspan="6" width="130px" style="padding:0rem 0rem;">
-				        <a href="{% url 'opds_catalog:cover' b.id %}" onclick="openCoverModal(this); return false;">
-                  <img src="{% url 'opds_catalog:thumb' b.id %}" alt=""
+    <div class="large-12 column">
+        <b>{{ b.title }}</b> &nbsp;&nbsp;&nbsp;&nbsp;
+        {% if isbookshelf %}
+            <i>
+		        <a href="#" onclick="del_bsbook({{ b.id }},'{{b.title}}');">
+			        <span class="secondary label small">&nbsp;{%trans "Delete from bookshelf" %}&nbsp;</span>
+				</a>
+			</i>
+        {% endif %}
+    </div>
+
+    <div class="large-12 column">
+        <table>
+        <tr>
+            <td rowspan="6" width="130px" style="padding:0rem 0rem;">
+                <a href="{% url 'opds_catalog:cover' b.id %}" onclick="openCoverModal(this); return false;">
+                    <img src="{% url 'opds_catalog:thumb' b.id %}" alt=""
                     style="width: 37rem;max-width: 100%;height: auto;vertical-align: middle;border-style: none;">
                 </a>
-			    </td>
-			    <td rowspan="6" style="font-size:100%; padding:1rem 1rem;">
-				  {% trans "Book title:" %} <b> {{ b.title }} </b> <br>
-				  {% if b.authors.count > 0 %}
-				    {% trans "Authors:" %} <b> {% for a in b.authors %} <a href="{% url "web:searchbooks" %}?searchtype=a&searchterms={{a.id}}" >{{a.full_name}}</a>{% if not forloop.last %},{%endif%} {%endfor%} </b> <br>
-				  {% endif %}
-				  {% if b.genres.count > 0 %}
-				    {% trans "Genres:" %} <b> {% for g in b.genres %} <a href="{% url "web:searchbooks" %}?searchtype=g&searchterms={{g.id}}">{{g.subsection}}</a>{% if not forloop.last %},{%endif%} {%endfor%} </b> <br>
-				  {% endif %}
-				  {% if b.series.count > 0 %}
-				    {% trans "Series:" %} <b> {% for s in b.series %} <a href="{% url "web:searchbooks" %}?searchtype=s&searchterms={{s.id}}">{{s.ser}}</a>{% if not forloop.last %},{%endif%} {%endfor%} </b> <br>
-                    {% trans "No in Series:" %}<b>{% for s in b.ser_no %}{{s.ser_no}}{% if not forloop.last %},{%endif%} {%endfor%}</b><br>
-				  {% endif %}
-				  {% trans "File:" %} <b> {{ b.shortpath }}/{{ b.filename }} </b> <br>
-				  {% trans "File size:" %} <b> {{ b.filesize|filesizeformat }} </b> <br>
-				  {% trans "Language:" %} <b> {{ b.lang }} </b> <br>
-				  {% if b.doubles > 0 %}
-				    {% trans "Doubles for book:" %} <b> <a href="{% url "web:searchbooks" %}?searchtype=d&searchterms={{b.id}}">{{ b.title }} ( {{ b.doubles }} {% trans "itm." %} ) </b> </a>
-				  {% endif %}
-			    </td>
-				<td width="140px" ><a id="ReadLink" href="https://omnireader.ru/#/reader?url=https://{{ request.META.HTTP_HOST }}{% url 'opds_catalog:download' b.id 0 %}" target="_blank"><b><u>{% trans "Read online" %}</u></b></a></td>
-			        <script>
-		                     var findlink = document.getElementById("ReadLink");
-                                     if (window.location.protocol != "https:") {
-		                         findlink.href = "https://omnireader.ru/#/reader?url=http://{{ request.META.HTTP_HOST }}{% url 'opds_catalog:download' b.id 0 %}";
-                                     }
-	                        </script>
-			</tr>
-			<tr>
-              <td><b>{% trans "Download:" %}</b></td>
-            </tr>
-			<tr>
-              <td><a href="{% url 'opds_catalog:download' b.id 0 %}"><b><u>{{b.format}}</u><b></a></td>
-            </tr>
-			<tr>
-              <td><a href="{% url 'opds_catalog:download' b.id 1 %}"><b><u>{{b.format}}+zip</u><b></a></td>
-            </tr>
-			<tr>
-              <td>{% if b.format == 'fb2' and fb2toepub %}<a href="{% url 'opds_catalog:convert' b.id 'epub' %}"><b><u>epub</u></b></a>{% endif %}</td>
-            </tr>
-			<tr>
-              <td>{% if b.format == 'fb2' and fb2tomobi %}<a href="{% url 'opds_catalog:convert' b.id 'mobi' %}"><b><u>mobi</u></b></a>{% endif %}</td>
-            </tr>
-			<tr>
-			<td colspan="3">
-			    <p style="font-size:90%;">{{b.annotation}}</p>
+            </td>
+            <td rowspan="6" style="font-size:100%; padding:1rem 1rem;">
+            {% trans "Book title:" %} <b> {{ b.title }} </b> <br>
+            {% if b.authors.count > 0 %}
+                {% trans "Authors:" %} <b> {% for a in b.authors %} <a href="{% url "web:searchbooks" %}?searchtype=a&searchterms={{a.id}}" >{{a.full_name}}</a>{% if not forloop.last %},{%endif%} {%endfor%} </b> <br>
+            {% endif %}
+            {% if b.genres.count > 0 %}
+                {% trans "Genres:" %} <b> {% for g in b.genres %} <a href="{% url "web:searchbooks" %}?searchtype=g&searchterms={{g.id}}">{{g.subsection}}</a>{% if not forloop.last %},{%endif%} {%endfor%} </b> <br>
+            {% endif %}
+            {% if b.series.count > 0 %}
+                {% trans "Series:" %} <b> {% for s in b.series %} <a href="{% url "web:searchbooks" %}?searchtype=s&searchterms={{s.id}}">{{s.ser}}</a>{% if not forloop.last %},{%endif%} {%endfor%} </b> <br>
+                {% trans "No in Series:" %}<b>{% for s in b.ser_no %}{{s.ser_no}}{% if not forloop.last %},{%endif%} {%endfor%}</b>
+<br>
+            {% endif %}
+            {% trans "File:" %} <b> {{ b.shortpath }}/{{ b.filename }} </b> <br>
+            {% trans "File size:" %} <b> {{ b.filesize|filesizeformat }} </b> <br>
+            {% trans "Language:" %} <b> {{ b.lang }} </b> <br>
+            {% if b.doubles > 0 %}
+                {% trans "Doubles for book:" %} <b> <a href="{% url "web:searchbooks" %}?searchtype=d&searchterms={
+{b.id}}">{{ b.title }} ( {{ b.doubles }} {% trans "itm." %} ) </b> </a>
+            {% endif %}
+            </td>
+            <td>
+                <a href="#"onclick="openBookModal('{% url 'opds_catalog:view_html' b.id %}'); return false;">
+                <b><u>Preview</u></b>
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td>
+			    <b>{% trans "Download:" %}</b>
 			</td>
-			</tr></table>
-		</div>			
+        </tr>
+        <tr>
+            <td>
+			    <a href="{% url 'opds_catalog:download' b.id 0 %}"><b><u>{{b.format}}</u><b></a>
+			</td>
+        </tr>
+        <tr>
+            <td>
+			    <a href="{% url 'opds_catalog:download' b.id 1 %}"><b><u>{{b.format}}+zip</u><b></a>
+			</td>
+        </tr>
+        <tr>
+            <td>
+			    {% if b.format == 'fb2' and fb2toepub %}
+				    <a href="{% url 'opds_catalog:convert' b.id 'epub' %}"><b><u>epub</u></b></a>
+                {% endif %}
+			</td>
+        </tr>
+        <tr>
+            <td>
+			    {% if b.format == 'fb2' and fb2tomobi %}
+				    <a href="{% url 'opds_catalog:convert' b.id 'mobi' %}"><b><u>mobi</u></b></a>
+                {% endif %}
+			</td>
+        </tr>
+        <tr>
+            <td colspan="3">
+                <p style="font-size:90%;">{{b.annotation}}</p>
+            </td>
+        </tr>
+		</table>
+    </div>
 {% endfor %}
 
 {% if paginator.num_pages > 1 %}
