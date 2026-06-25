@@ -1,4 +1,3 @@
-
 from django.conf.urls import url
 from opds_catalog import feeds, dl
 
@@ -45,6 +44,7 @@ urlpatterns = [
 
     url(r'^search/(?P<searchterms>.+)/$',feeds.SearchTypesFeed(), name='searchtypes'),
     
+    url(r'^view_html/(?P<book_id>[0-9]+)/$', dl.ViewHtml, name='view_html'),
     url(r'^convert/(?P<book_id>[0-9]+)/(?P<convert_type>.+)/$',dl.ConvertFB2, name='convert'),
     url(r'^download/(?P<book_id>[0-9]+)/(?P<zip_flag>[0-1])/$',dl.Download, name='download'),
     url(r'^cover/(?P<book_id>[0-9]+)/$',dl.Cover, name='cover'),
@@ -53,4 +53,3 @@ urlpatterns = [
         
     url(r'^$',feeds.MainFeed(), name='main'),
 ]
-
