@@ -23,7 +23,7 @@
 Есть ещё изменение для безопасности - генерация уникального SECRET_KEY, но это работает только c моим [docker-sopds](https://github.com/ichbinkirgiz/docker-sopds).
 
 ~~Если б кто ещё смог запустить sopds через nginx и отключить DEBUG - цены б ему не было.~~ <br>
-[@deathmond1987](https://github.com/deathmond1987) таки смог, смотрите мой [docker-sopds](https://github.com/ichbinkirgiz/docker-sopds)
+[@deathmond1987](https://github.com/deathmond1987) таки смог, смотрите nginx-branch в моём [docker-sopds](https://github.com/ichbinkirgiz/docker-sopds), ну или у самого [@deathmond1987](https://github.com/deathmond1987/docker-sopds)
 
 **Теперь чуть подробней о некоторых изменениях:**
 > [!WARNING]
