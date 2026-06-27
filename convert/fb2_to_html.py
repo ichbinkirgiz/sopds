@@ -78,14 +78,14 @@ def extract_description(root):
         genres = [plain_text(g) for g in title_info.findall("fb:genre", NS)]
 
     meta = {
-        "Titel": get("fb:book-title"),
-        "Autor": ", ".join(authors),
-        "Genre": ", ".join(g for g in genres if g),
-        "Sprache": get("fb:lang"),
-        "Datum": get("fb:date"),
-        "Serie": "",
-        "Dokument-ID": "",
-        "Version": "",
+        "Название": get("fb:book-title"),
+        "Автор": ", ".join(authors),
+        "Жанр": ", ".join(g for g in genres if g),
+        "Язык": get("fb:lang"),
+        "Дата": get("fb:date"),
+        "Серия": "",
+        "ID": "",
+        "Версия": "",
     }
 
     sequence = title_info.find("fb:sequence", NS) if title_info is not None else None
@@ -94,13 +94,13 @@ def extract_description(root):
         number = sequence.attrib.get("number", "")
 
         if name and number:
-            meta["Serie"] = f"{name} #{number}"
+            meta["Серия"] = f"{name} #{number}"
         elif name:
-            meta["Serie"] = name
+            meta["Серия"] = name
 
     if doc_info is not None:
-        meta["Dokument-ID"] = plain_text(doc_info.find("fb:id", NS))
-        meta["Version"] = plain_text(doc_info.find("fb:version", NS))
+        meta["ID"] = plain_text(doc_info.find("fb:id", NS))
+        meta["Версия"] = plain_text(doc_info.find("fb:version", NS))
 
     annotation = title_info.find("fb:annotation", NS) if title_info is not None else None
 
@@ -343,13 +343,13 @@ def render_description(meta, annotation, binaries):
                 f"<td>{html.escape(value)}</td></tr>"
             )
 
-    result = '<section class="description">\n<h2>Metadaten</h2>\n'
+    result = '<section class="description">\n<h2>Метаданные</h2>\n'
 
     if rows:
         result += "<table>\n" + "\n".join(rows) + "\n</table>\n"
 
     if annotation is not None:
-        result += "<h3>Annotation</h3>\n"
+        result += "<h3>Аннотация</h3>\n"
 
         for child in annotation:
             result += render_block(child, binaries, 4)
@@ -364,7 +364,7 @@ def render_notes(root, binaries, note_backrefs):
     if not notes_bodies:
         return ""
 
-    html_parts = ['<section class="notes">\n<h2>Notizen</h2>\n']
+    html_parts = ['<section class="notes">\n<h2>Примечания</h2>\n']
 
     for body in notes_bodies:
         for child in body:
@@ -400,7 +400,7 @@ def fb2_to_html(input_path: Path, output_path: Path):
 
     binaries = extract_binaries(root)
     meta, annotation, coverpage = extract_description(root)
-    title = meta.get("Titel") or input_path.stem
+    title = meta.get("Название") or input_path.stem
 
     note_backrefs = {}
     anchor_counter = {"value": 0}
@@ -411,7 +411,7 @@ def fb2_to_html(input_path: Path, output_path: Path):
     ]
 
     #
-    # Inhaltsverzeichnis erzeugen
+    # Содержание
     #
     toc_items = []
     section_counter = {"value": 0}
@@ -430,7 +430,7 @@ def fb2_to_html(input_path: Path, output_path: Path):
     if toc_items:
         toc_html = """
     <nav class="toc">
-    <h2>Inhaltsverzeichnis</h2>
+    <h2>Содержание</h2>
     <ul>
     """
 
