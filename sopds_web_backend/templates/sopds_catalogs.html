@@ -1,0 +1,63 @@
+{% extends "sopds_main.html" %}
+{% load staticfiles %}
+{% load i18n %}
+
+{% block body %}
+<table>
+{%  for b in items %}
+<tr>
+
+{% if b.is_catalog == 1 %}
+    {% if b.cat_type == 0 %}
+		<td width="80px" style="padding:0rem 0rem;"><img src="{% static "images/folder.png" %}" width="32px"></td>
+	{% endif %}	
+    {% if b.cat_type == 1 or b.cat_type == 3 %}
+	    <td width="80px" style="padding:0rem 0rem;"><img src="{% static "images/zip.png" %}" width="32px"></td>
+	{% endif %}
+    {% if b.cat_type == 2 %}
+	    <td width="80px" style="padding:0rem 0rem;"><img src="{% static "images/inpx.png" %}" width="32px"></td>
+	{% endif %}			
+		    	
+	<td> <a href="{% url "web:catalog" %}?cat={{b.id}}">{{ b.title }}</a> </td>
+{% else %}
+	<td width="80px" style="padding:0rem 0rem;"><img src="{% static "images/text.png" %}" width="32px"><span class="success label">{{ b.format }}</span></td>
+	<td>
+	<a href="{% url "web:searchbooks" %}?searchtype=i&searchterms={{b.id}}"> 
+	{{ b.title }} 
+	{% if b.authors.count > 0 %}
+	   ({% for a in b.authors %}{{a.full_name}}{% if not forloop.last %}, {%endif%}{%endfor%})
+	{% endif %}
+	</a>
+	</td>
+{% endif %}	
+
+</tr>		
+{% endfor %}
+</table>
+
+{% if paginator.num_pages > 1 %}
+<ul class="pagination" role="navigation" aria-label="Pagination">
+  <li class="pagination-previous {% if not paginator.has_previous %}disabled{%endif%}">
+      {% if paginator.has_previous %}<a href="{% url "web:catalog" %}?{% if cat_id %}cat={{cat_id}}&{% endif %}page={{paginator.previous_page_number}}" aria-label="Previous page"> {%endif%}
+         {% trans "Previous page" %}
+      {% if paginator.has_previous %}</a>{%endif%}
+  </li>
+  
+  {% for pn in paginator.page_range %}
+     {% if paginator.number == pn %}
+        <li class="current">{{pn}}</li>
+     {% else %}
+        <li><a href="{% url "web:catalog" %}?{% if cat_id %}cat={{cat_id}}&{% endif %}page={{pn}}" aria-label="Page {{pn}}">{{pn}}</a></li>
+     {% endif %}   
+        {# <li class="ellipsis" aria-hidden="true"></li> #}
+  {% endfor %}
+  
+  <li class="pagination-next" {% if not paginator.has_next %}disabled{%endif%}>
+      {% if paginator.has_next %}<a href="{% url "web:catalog" %}?{% if cat_id %}cat={{cat_id}}&{% endif %}page={{paginator.next_page_number}}" aria-label="Next page">{%endif%}
+         {% trans "Next page" %}
+      {% if paginator.has_next %}</a>{%endif%}
+  </li>
+</ul>
+{% endif %}
+
+{% endblock %}  {# body #}
